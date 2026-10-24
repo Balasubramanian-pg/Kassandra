@@ -18,3 +18,23 @@ sdist/
 var/
 wheels/
 *.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual Environment
+.venv/
+venv/
+ENV/
+
+# Environment variables
+.env
+
+# Playwright browser profiles / cache
+.auth/
+user_data/
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
