@@ -16,3 +16,22 @@ Category Weights:
 - career_relevance: {weights.career_relevance}
 
 Candidate Profile Body:
+---
+{candidate_profile_body}
+---
+
+Job Title: {job_title}
+Job Company: {job_company}
+Job Location: {job_location}
+Job Description:
+---
+{job_description}
+---
+
+Calculate scores and write a brief explanation for each category.
+Return a JSON object containing:
+- total_score (0-100 integer)
+- analysis (markdown content for the '## Fit Analysis' section, detailing category breakdown, matched/missing skills, and short reasons)
+
+Return ONLY raw JSON, starting with { and ending with }. Do not wrap it in markdown code blocks.
+```
