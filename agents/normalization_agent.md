@@ -1,0 +1,3 @@
+# Normalization Agent Specification
+
+## Responsibilities
