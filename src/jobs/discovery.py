@@ -88,3 +88,113 @@ class DiscoveryAgent:
                                 text = l.inner_text()
                                 discovered.append({
                                     "source_url": href,
+                                    "title": text,
+                                    "company": "Unknown",
+                                    "location": [loc],
+                                    "source": "naukri",
+                                    "posted_date": datetime.date.today().isoformat()
+                                })
+                        continue
+                    
+                    for card in cards:
+                        # Extract title and link
+                        title_el = card.query_selector("a.title, a[href*='/job-description-']")
+                        if not title_el:
+                            continue
+                        
+                        href = title_el.get_attribute("href")
+                        if not href or is_duplicate_url(self.vault_path, href):
+                            continue
+                            
+                        title_text = title_el.inner_text().strip()
+                        
+                        # Company
+                        company_el = card.query_selector("a.comp-name, .companyInfo a, .comp-info-header a")
+                        company_text = company_el.inner_text().strip() if company_el else "Unknown"
+                        
+                        # Location
+                        loc_el = card.query_selector(".location, li.location, span.locWdth")
+                        loc_text = loc_el.inner_text().strip() if loc_el else loc
+                        
+                        # Experience
+                        exp_el = card.query_selector(".experience, li.experience, span.exp")
+                        exp_text = exp_el.inner_text().strip() if exp_el else "Unknown"
+                        
+                        # Parse exp range e.g. "2-5 Yrs"
+                        exp_min, exp_max = 0, 99
+                        if exp_el:
+                            match = re.search(r"(\d+)\s*-\s*(\d+)", exp_text)
+                            if match:
+                                exp_min = int(match.group(1))
+                                exp_max = int(match.group(2))
+                        
+                        # Posted date
+                        posted_el = card.query_selector(".postedVal, .day-txt")
+                        posted_text = posted_el.inner_text().strip() if posted_el else ""
+                        
+                        discovered.append({
+                            "source_url": href,
+                            "title": title_text,
+                            "company": company_text,
+                            "location": [l.strip() for l in loc_text.split(",")] if loc_text else [loc],
+                            "experience_min": exp_min,
+                            "experience_max": exp_max,
+                            "posted_text": posted_text,
+                            "source": "naukri",
+                            "discovered_date": datetime.date.today().isoformat()
+                        })
+                        
+                except Exception as e:
+                    print(f"Error searching Naukri for '{title}' in '{loc}': {e}")
+                    
+        return discovered
+
+    def save_jobs(self, jobs: list[dict]) -> int:
+        count = 0
+        today = datetime.date.today()
+        year_str = today.strftime("%Y")
+        month_str = today.strftime("%m - %B")
+        date_str = today.strftime("%Y-%m-%d")
+        
+        for job in jobs:
+            next_id = get_next_job_id(self.vault_path)
+            
+            # Clean company name and title for file name
+            safe_company = "".join([c if c.isalnum() else "_" for c in job["company"]])
+            safe_title = "".join([c if c.isalnum() else "_" for c in job["title"]])
+            filename = f"{next_id} - {safe_company} - {safe_title}.md"
+            
+            # Create full path
+            job_dir = os.path.join(self.vault_path, "01 - Jobs", year_str, month_str, date_str)
+            os.makedirs(job_dir, exist_ok=True)
+            filepath = os.path.join(job_dir, filename)
+            
+            # Prepare frontmatter
+            frontmatter = {
+                "type": "job",
+                "job_id": next_id,
+                "source": job["source"],
+                "source_job_id": job["source_url"].split("-")[-1].replace(".html", ""),
+                "source_url": job["source_url"],
+                "company": job["company"],
+                "title": job["title"],
+                "location": job["location"],
+                "posted_date": job["discovered_date"],
+                "discovered_date": job["discovered_date"],
+                "experience_min": job.get("experience_min"),
+                "experience_max": job.get("experience_max"),
+                "status": "discovered",
+                "fit_score": None,
+                "priority": None,
+                "resume_status": "pending",
+                "ats_status": "pending",
+                "application_status": "not_applied",
+                "tags": ["job", job["source"]]
+            }
+            
+            body = f"# {job['title']}\n\n## Company\n\n{job['company']}\n\n## Location\n\n{', '.join(job['location'])}\n\n## Source\n\n[{job['source_url']}]({job['source_url']})\n"
+            
+            write_markdown_file(filepath, frontmatter, body)
+            count += 1
+            
+        return count
