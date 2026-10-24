@@ -146,3 +146,185 @@ Strictly adhere to the following rules:
 3. Optimize representation: prioritize relevant experience, reorder skills, and highlight relevant projects.
 4. Keep the chronology and actual job titles factual and unaltered.
 
+Candidate Profile:
+---
+{profile_body}
+---
+
+Evidence Map:
+---
+{evidence_body}
+---
+
+Job Title: {job_fm.get('title')}
+Company: {job_fm.get('company')}
+
+Generate a clean markdown resume. Do not include HTML. Output only the markdown resume.
+"""
+        model = genai.GenerativeModel('gemini-1.5-flash')
+        response = model.generate_content(prompt)
+        resume_md = response.text.strip()
+        
+        tailored_dir = os.path.join(self.vault_path, "04 - Resumes", "Tailored", job_id)
+        os.makedirs(tailored_dir, exist_ok=True)
+        
+        resume_path = os.path.join(tailored_dir, "03 - Resume.md")
+        fm = {
+            "type": "resume",
+            "job_id": job_id,
+            "version": "1.0",
+            "generated_date": datetime.date.today().isoformat()
+        }
+        write_markdown_file(resume_path, fm, resume_md)
+        
+        # Write docx
+        self.convert_md_to_docx(resume_md, os.path.join(tailored_dir, "Resume.docx"))
+        
+        # Write pdf
+        self.convert_md_to_pdf(resume_md, os.path.join(tailored_dir, "Resume.pdf"))
+        
+        return resume_path
+
+    def convert_md_to_docx(self, markdown_text: str, output_path: str):
+        doc = Document()
+        for line in markdown_text.split("\n"):
+            line = line.strip()
+            if line.startswith("# "):
+                doc.add_heading(line[2:], level=1)
+            elif line.startswith("## "):
+                doc.add_heading(line[3:], level=2)
+            elif line.startswith("### "):
+                doc.add_heading(line[4:], level=3)
+            elif line.startswith("- "):
+                doc.add_paragraph(line[2:], style='List Bullet')
+            elif line:
+                doc.add_paragraph(line)
+        doc.save(output_path)
+
+    def convert_md_to_pdf(self, markdown_text: str, output_path: str):
+        # We can construct HTML from MD and print using Playwright
+        import markdown
+        html_content = markdown.markdown(markdown_text)
+        
+        styled_html = f"""
+        <html>
+        <head>
+            <style>
+                body {{
+                    font-family: Arial, sans-serif;
+                    line-height: 1.5;
+                    margin: 40px;
+                    color: #333;
+                }}
+                h1 {{ text-align: center; border-bottom: 2px solid #333; padding-bottom: 10px; }}
+                h2 {{ border-bottom: 1px solid #666; padding-bottom: 5px; margin-top: 20px; }}
+                ul {{ margin-left: 20px; }}
+            </style>
+        </head>
+        <body>
+            {html_content}
+        </body>
+        </html>
+        """
+        
+        with sync_playwright() as p:
+            browser = p.chromium.launch(headless=True)
+            page = browser.new_page()
+            page.set_content(styled_html)
+            page.pdf(path=output_path, format="A4")
+            browser.close()
+
+
+class ATSValidationAgent:
+    def __init__(self, vault_path: str = "vault"):
+        self.vault_path = vault_path
+        api_key = os.environ.get("GEMINI_API_KEY")
+        if api_key:
+            genai.configure(api_key=api_key)
+
+    def validate_resume(self, job_filepath: str, resume_filepath: str, evidence_map_filepath: str) -> dict:
+        job_fm, job_body = parse_markdown_file(job_filepath)
+        _, resume_body = parse_markdown_file(resume_filepath)
+        _, evidence_body = parse_markdown_file(evidence_map_filepath)
+        job_id = job_fm.get("job_id")
+        
+        prompt = f"""
+Perform an ATS audit comparing the target Job Description, Candidate Resume, and Evidence Map.
+Verify that:
+1. No unsupported or fabricated candidate claims exist in the resume.
+2. The resume matches the terminology and structure of the job description.
+
+Job Description:
+---
+{job_body}
+---
+
+Candidate Resume:
+---
+{resume_body}
+---
+
+Evidence Map:
+---
+{evidence_body}
+---
+
+Return a JSON response containing:
+- application_match_score (integer 0-100)
+- strong_coverage (list of strings)
+- partial_coverage (list of strings)
+- missing (list of strings)
+- unsupported_claims_detected (boolean)
+- revision_needed (boolean, set to true if score < 85 or if unsupported claims were detected)
+- revision_suggestions (string)
+
+Return ONLY raw JSON, starting with {{ and ending with }}. Do not wrap it in markdown code blocks.
+"""
+        model = genai.GenerativeModel('gemini-1.5-flash')
+        response = model.generate_content(prompt)
+        text = response.text.strip()
+        if text.startswith("```"):
+            text = re.sub(r"^```[a-zA-Z]*\n", "", text)
+            text = re.sub(r"\n```$", "", text)
+            text = text.strip()
+            
+        res = json.loads(text)
+        
+        # Save report
+        tailored_dir = os.path.join(self.vault_path, "04 - Resumes", "Tailored", job_id)
+        report_path = os.path.join(tailored_dir, "04 - ATS Validation.md")
+        
+        fm = {
+            "type": "ats_validation",
+            "job_id": job_id,
+            "application_match_score": res["application_match_score"]
+        }
+        
+        body = f"""# ATS / Application Validation
+
+## Application Match Score
+
+{res['application_match_score']}/100
+
+## Strong Coverage
+
+{chr(10).join(['- ' + sc for sc in res.get('strong_coverage', [])])}
+
+## Partial Coverage
+
+{chr(10).join(['- ' + pc for pc in res.get('partial_coverage', [])])}
+
+## Missing
+
+{chr(10).join(['- ' + m for m in res.get('missing', [])])}
+
+## Evidence Integrity
+
+{"FAIL - Unsupported candidate claims detected!" if res.get('unsupported_claims_detected') else "PASS - No unsupported candidate claims detected."}
+
+## Suggestions
+
+{res.get('revision_suggestions', 'None.')}
+"""
+        write_markdown_file(report_path, fm, body)
+        return res
