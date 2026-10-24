@@ -18,3 +18,23 @@ Skills:
 Projects:
 {candidate_projects_json}
 ---
+
+Job Details:
+Title: {job_title}
+Company: {job_company}
+Job Content:
+{job_content}
+
+Return ONLY raw JSON in this format:
+{{
+  "requirements": [
+    {{
+      "requirement_name": "SQL",
+      "requirement_description": "Strong SQL skills",
+      "evidence": ["[[SQL]]", "[[Company A]]", "[[Healthcare MDM]]"],
+      "classification": "STRONG_MATCH"
+    }}
+  ]
+}}
+Do not wrap it in markdown code blocks.
+```
