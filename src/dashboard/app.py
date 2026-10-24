@@ -102,3 +102,132 @@ HTML_TEMPLATE = """
                         <tr>
                             <th class="p-3">Job ID</th>
                             <th class="p-3">Company</th>
+                            <th class="p-3">Title</th>
+                            <th class="p-3">Location</th>
+                            <th class="p-3">Fit Score</th>
+                            <th class="p-3">Status</th>
+                            <th class="p-3">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-700">
+                        {% for job in jobs %}
+                        <tr class="hover:bg-gray-750">
+                            <td class="p-3 font-semibold text-gray-100">{{ job.job_id }}</td>
+                            <td class="p-3">{{ job.company }}</td>
+                            <td class="p-3 font-medium text-green-300">{{ job.title }}</td>
+                            <td class="p-3 text-gray-400">{{ job.location|join(', ') }}</td>
+                            <td class="p-3">
+                                {% if job.fit_score %}
+                                <span class="px-2 py-1 rounded text-xs font-bold {% if job.fit_score >= 85 %}bg-green-900 text-green-300{% elif job.fit_score >= 70 %}bg-yellow-900 text-yellow-300{% else %}bg-red-900 text-red-300{% endif %}">
+                                    {{ job.fit_score }}%
+                                </span>
+                                {% else %}
+                                <span class="text-gray-500">-</span>
+                                {% endif %}
+                            </td>
+                            <td class="p-3">
+                                <span class="px-2 py-1 rounded text-xs bg-gray-700 text-gray-300 uppercase font-semibold">
+                                    {{ job.status }}
+                                </span>
+                            </td>
+                            <td class="p-3">
+                                <a href="/job/{{ job.job_id }}" class="text-green-400 hover:underline">Details &rarr;</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</body>
+</html>
+"""
+
+JOB_DETAIL_TEMPLATE = """
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ job.title }} - Details</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-900 text-gray-100 font-sans min-h-screen">
+    <!-- Navbar -->
+    <nav class="border-b border-gray-800 bg-gray-950 p-4">
+        <div class="container mx-auto flex justify-between items-center">
+            <a href="/" class="text-sm text-green-400 hover:underline">&larr; Back to Dashboard</a>
+            <h1 class="text-lg font-bold">{{ job.company }} - {{ job.title }}</h1>
+            <span class="text-xs text-gray-400">ID: {{ job.job_id }}</span>
+        </div>
+    </nav>
+
+    <!-- Content -->
+    <div class="container mx-auto p-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
+        
+        <!-- Left Pane: Metadata & Status -->
+        <div class="space-y-6 lg:col-span-1">
+            <div class="bg-gray-800 rounded-lg border border-gray-700 p-6">
+                <h3 class="font-bold text-green-400 mb-4 uppercase text-sm border-b border-gray-700 pb-2">Overview</h3>
+                <div class="space-y-3 text-sm">
+                    <div><span class="text-gray-400">Company:</span> {{ job.company }}</div>
+                    <div><span class="text-gray-400">Location:</span> {{ job.location|join(', ') }}</div>
+                    <div><span class="text-gray-400">Experience Min/Max:</span> {{ job.experience_min }} - {{ job.experience_max }} Yrs</div>
+                    <div><span class="text-gray-400">Remote Type:</span> {{ job.remote_type }}</div>
+                    <div><span class="text-gray-400">Domain:</span> {{ job.domain }}</div>
+                    <div><span class="text-gray-400">Source:</span> <a href="{{ job.source_url }}" target="_blank" class="text-blue-400 hover:underline">Original Link &nearr;</a></div>
+                </div>
+            </div>
+
+            <div class="bg-gray-800 rounded-lg border border-gray-700 p-6">
+                <h3 class="font-bold text-green-400 mb-4 uppercase text-sm border-b border-gray-700 pb-2">Fit & Application Status</h3>
+                <div class="space-y-3 text-sm">
+                    <div><span class="text-gray-400">Fit Score:</span> <strong class="text-yellow-300">{{ job.fit_score or 'Not scored' }}%</strong></div>
+                    <div><span class="text-gray-400">Job Status:</span> <span class="bg-gray-700 px-2 py-0.5 rounded text-xs">{{ job.status }}</span></div>
+                    <div><span class="text-gray-400">Resume Status:</span> <span class="bg-indigo-900 text-indigo-300 px-2 py-0.5 rounded text-xs">{{ job.resume_status }}</span></div>
+                    <div><span class="text-gray-400">Application Status:</span> <span class="bg-teal-900 text-teal-300 px-2 py-0.5 rounded text-xs">{{ job.application_status }}</span></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Pane: JD & Analysis Body -->
+        <div class="lg:col-span-2 space-y-6">
+            <div class="bg-gray-800 rounded-lg border border-gray-700 p-6">
+                <h3 class="font-bold text-green-400 mb-4 uppercase text-sm border-b border-gray-700 pb-2">Analysis & JD Content</h3>
+                <div class="prose prose-invert max-w-none text-sm text-gray-300 whitespace-pre-wrap">
+                    {{ body }}
+                </div>
+            </div>
+        </div>
+
+    </div>
+</body>
+</html>
+"""
+
+@app.get("/", response_class=HTMLResponse)
+async def dashboard(request: Request):
+    jobs = get_all_jobs()
+    stats = get_funnel_stats(jobs)
+    # Import jinja2 render directly
+    from jinja2 import Template
+    t = Template(HTML_TEMPLATE)
+    return t.render(jobs=jobs, stats=stats, vault_path=os.path.abspath(VAULT_PATH))
+
+@app.get("/job/{job_id}", response_class=HTMLResponse)
+async def job_detail(job_id: str):
+    jobs = get_all_jobs()
+    target_job = None
+    for j in jobs:
+        if j.get("job_id") == job_id:
+            target_job = j
+            break
+            
+    if not target_job:
+        return HTMLResponse("Job not found", status_code=404)
+        
+    _, body = parse_markdown_file(target_job["filepath"])
+    from jinja2 import Template
+    t = Template(JOB_DETAIL_TEMPLATE)
+    return t.render(job=target_job, body=body)
