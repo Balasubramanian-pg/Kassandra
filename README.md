@@ -52,3 +52,58 @@
 │   ├── 05 - Candidate Profile/         # Skills, experience, projects KB
 │   ├── 06 - Companies/                 # Company intelligence graph
 │   ├── 08 - Search Configuration/      # Configurable search parameters
+│   └── 99 - System/                    # Taxonomy, error logs, audit trails
+├── agents/                             # Agent behavioral specifications
+├── prompts/                            # Structured LLM evaluation prompts
+├── src/
+│   ├── browser/                        # Playwright browser manager
+│   ├── jobs/                           # Discovery, extraction, scoring
+│   ├── resumes/                        # Evidence mapping, DOCX/PDF generation
+│   ├── vault/                          # Obsidian frontmatter parser
+│   ├── dashboard/                      # FastAPI view-only dashboard
+│   └── orchestrator.py                 # Multi-agent orchestrator
+└── tests/                              # Automated test suites
+```
+
+---
+
+## 🚀 Quick Start
+
+### 1. Prerequisites
+- Python 3.10+
+- Chromium for Playwright:
+  ```powershell
+  playwright install chromium
+  ```
+- An active Gemini API Key.
+
+### 2. Installation
+```powershell
+git clone https://github.com/Balasubramanian-pg/Kassandra.git
+cd Kassandra
+pip install -r requirements.txt
+```
+
+### 3. Configure Credentials
+Create a `.env` file at the root:
+```env
+GEMINI_API_KEY=your-gemini-api-key-here
+```
+
+### 4. Run the Daily Engine
+Execute the end-to-end discovery, extraction, scoring, evidence mapping, and resume tailoring workflow:
+```powershell
+python src/orchestrator.py
+```
+
+### 5. Launch the Dashboard
+View the live pipeline and review ready-to-apply jobs:
+```powershell
+uvicorn src.dashboard.app:app --reload
+```
+Navigate to `http://localhost:8000`.
+
+---
+
+## 📄 License
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
