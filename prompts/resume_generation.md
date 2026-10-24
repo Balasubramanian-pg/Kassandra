@@ -10,3 +10,16 @@ Strictly adhere to the following rules:
 
 Candidate Profile:
 ---
+{candidate_profile_body}
+---
+
+Evidence Map:
+---
+{evidence_map_body}
+---
+
+Job Title: {job_title}
+Company: {job_company}
+
+Generate a clean markdown resume. Do not include HTML. Output only the markdown resume.
+```
