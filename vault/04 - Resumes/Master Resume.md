@@ -24,3 +24,24 @@ Results-driven Business Intelligence Developer with 3+ years of experience desig
 ### [[Company A]]
 **Business Intelligence Developer** | Jan 2023 – Present | Pune, India
 
+- Architected and delivered 15+ high-impact [[Power BI]] analytical dashboards monitoring clinical operations, patient intake, and provider quality scorecards.
+- Authored complex [[SQL]] queries, stored procedures, window functions, and indexing strategies, improving query response time across multi-million record datasets by 40%.
+- Engineered automated Python ETL pipelines to ingest, sanitize, and validate transactional healthcare data, eliminating 8 hours of weekly manual reconciliation.
+- Implemented robust Row-Level Security (RLS) policies and incremental refresh protocols in Power BI Service.
+
+## Projects
+
+### [[Healthcare MDM]]
+**Lead BI & Data Modeling Engineer** | 2023 – 2024
+
+- Spearheaded data model consolidation across multiple legacy EHR clinics into a unified Snowflake star-schema warehouse.
+- Developed an interactive data health scorecard in [[Power BI]] highlighting record linkage discrepancies and master index consistency.
+- Authored record linkage deduplication scripts in Python with 99.2% entity resolution accuracy.
+
+## Education
+
+**Bachelor of Engineering in Computer Science** (2022)
+
+## Certifications
+
+- Microsoft Certified: Power BI Data Analyst Associate (PL-300)
