@@ -1,0 +1,8 @@
+vault_path: "p:/W06/job-application-engine/vault"
+gemini_model: "gemini-1.5-flash"
+gemini_api_key_env_var: "GEMINI_API_KEY"
+browser:
+  headless: true
+  timeout_ms: 30000
+  user_data_dir: "p:/W06/job-application-engine/.auth/user_data"
+rate_limiting:
