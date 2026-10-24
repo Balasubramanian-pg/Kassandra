@@ -28,3 +28,27 @@ Results-driven Business Intelligence Developer with 3+ years of experience desig
 
 - 3 years as BI Developer at [[Company A]]
 - Led development of [[Healthcare MDM]] project
+
+## Technical Skills
+
+- **Languages**: [[SQL]], [[Python]]
+- **BI Tools**: [[Power BI]], Tableau
+- **Data Warehousing**: Snowflake, SQL Server
+
+## Domain Knowledge
+
+- Healthcare Analytics
+- Pharmaceutical Sales Reporting
+
+## Education
+
+- Bachelor of Engineering in Computer Science (2022)
+
+## Certifications
+
+- Microsoft Certified: Power BI Data Analyst Associate
+
+## Career Preferences
+
+- Full-time employment
+- Prefers remote or hybrid work in Pune/Hyderabad
