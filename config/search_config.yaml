@@ -1,0 +1,18 @@
+daily_application_target: 30
+sources:
+  - naukri
+locations:
+  - Pune
+  - Hyderabad
+  - Remote India
+experience_min: 2
+experience_max: 5
+target_titles:
+  - Business Intelligence Developer
+  - BI Developer
+  - BI Analyst
+  - Data Analyst
+  - Healthcare Data Analyst
+  - Healthcare BI Analyst
+  - Data Engineer
+  - Analytics Engineer
