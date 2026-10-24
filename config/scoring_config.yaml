@@ -1,0 +1,7 @@
+weights:
+  experience_match: 20
+  technical_skill_match: 25
+  title_match: 15
+  domain_match: 10
+  responsibility_match: 10
+  location_match: 5
