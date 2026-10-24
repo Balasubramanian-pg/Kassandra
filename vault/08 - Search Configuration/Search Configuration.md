@@ -1,0 +1,42 @@
+---
+type: search_configuration
+daily_application_target: 30
+sources:
+  - naukri
+locations:
+  - Pune
+  - Hyderabad
+  - Remote India
+experience_min: 2
+experience_max: 5
+target_titles:
+  - Business Intelligence Developer
+  - BI Developer
+  - BI Analyst
+  - Data Analyst
+  - Healthcare Data Analyst
+  - Healthcare BI Analyst
+  - Data Engineer
+  - Analytics Engineer
+  - SQL Developer
+  - Power BI Developer
+preferred_skills:
+  - SQL
+  - Power BI
+  - Tableau
+  - Python
+  - Snowflake
+  - Databricks
+  - Microsoft Fabric
+  - Azure
+  - PySpark
+  - ETL
+  - Data Warehousing
+preferred_domains:
+  - Healthcare
+  - Pharma
+  - Life Sciences
+  - Analytics
+---
+
+# Search Configuration
