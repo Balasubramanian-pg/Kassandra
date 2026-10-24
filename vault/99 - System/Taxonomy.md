@@ -20,3 +20,21 @@ This file maps variant spellings of skills, company names, titles, and locations
 | Py Spark | PySpark |
 | Datawarehouse | Data Warehousing |
 | Datawarehousing | Data Warehousing |
+
+## Title Normalization
+
+| Raw Term | Canonical Term |
+| --- | --- |
+| BI Developer | Business Intelligence Developer |
+| Power BI Developer | Business Intelligence Developer |
+| PowerBI Developer | Business Intelligence Developer |
+| Lead BI Developer | Senior BI Developer |
+
+## Location Normalization
+
+| Raw Term | Canonical Term |
+| --- | --- |
+| Pune, India | Pune |
+| Hyderabad, India | Hyderabad |
+| Remote, India | Remote India |
+| WFH | Remote India |
