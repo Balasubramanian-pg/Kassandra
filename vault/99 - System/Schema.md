@@ -38,3 +38,39 @@ tags:
 ```
 
 ## 2. Candidate Skill (`vault/05 - Candidate Profile/Skills/<Skill>.md`)
+
+```yaml
+---
+type: skill
+skill: SQL
+level: advanced
+years_experience: 3
+---
+```
+
+## 3. Tailored Resume (`vault/04 - Resumes/Tailored/<JOB-ID>/03 - Resume.md`)
+
+```yaml
+---
+type: resume
+job_id: JOB-000001
+version: "1.0"
+generated_date: 2026-08-28
+---
+```
+
+## 4. Application Record (`vault/03 - Applications/<JOB-ID> - Company - Title.md`)
+
+```yaml
+---
+type: application
+job_id: JOB-000001
+status: ready_to_apply | applied | screening | interview | offer | rejected
+resume_id: RESUME-JOB-000001
+prepared_date: 2026-08-28
+applied_date: null
+application_method: naukri
+interview_stage: none
+response_status: pending
+---
+```
