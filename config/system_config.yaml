@@ -6,3 +6,11 @@ browser:
   timeout_ms: 30000
   user_data_dir: "p:/W06/job-application-engine/.auth/user_data"
 rate_limiting:
+  request_delay_sec: 2
+  max_jobs_per_run: 50
+resume:
+  output_format:
+    markdown: true
+    docx: true
+    pdf: true
+  revision_loops_limit: 2
