@@ -16,3 +16,22 @@ target_titles:
   - Healthcare BI Analyst
   - Data Engineer
   - Analytics Engineer
+  - SQL Developer
+  - Power BI Developer
+preferred_skills:
+  - SQL
+  - Power BI
+  - Tableau
+  - Python
+  - Snowflake
+  - Databricks
+  - Microsoft Fabric
+  - Azure
+  - PySpark
+  - ETL
+  - Data Warehousing
+preferred_domains:
+  - Healthcare
+  - Pharma
+  - Life Sciences
+  - Analytics
