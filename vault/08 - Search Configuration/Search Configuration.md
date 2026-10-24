@@ -40,3 +40,5 @@ preferred_domains:
 ---
 
 # Search Configuration
+
+This configuration is used by the **Job Discovery Agent** and **Job Scoring Engine** to search for relevant jobs and compute their alignment.
